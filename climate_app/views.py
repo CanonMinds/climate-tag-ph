@@ -1,10 +1,9 @@
 from django.http import HttpResponse
-import datetime
+from django.shortcuts import render
 
 def index(request):
-    now = datetime.datetime.now()
-    html = "<html><body>Climate App Dashboard Index. <br><br>It is now %s.</body></html>" % now
-    return HttpResponse(html)
+    template_name = 'climate_app/dash_index.html'
+    return render(request, template_name,  )
 
 def dashboard(request):
     html = "<html><body>Climate App Contents.</body></html>"

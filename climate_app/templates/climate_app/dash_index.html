@@ -133,7 +133,7 @@
     
 
     var grayscale = L.tileLayer(mapboxUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
-    darkmatter   = L.tileLayer(DarkMatterUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
+    darkmatter = L.tileLayer(DarkMatterUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
     tonerbackground = L.tileLayer(StamenTonerBackgroundUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
     voyagerclear = L.tileLayer(VoyagerClear, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
     positronnolabel = L.tileLayer(PositronUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution});;
@@ -149,11 +149,11 @@
         fullscreenControl: {
                 pseudoFullscreen: true
         },
-        layers: [voyagerclear, cities],
+        layers: [grayscale, cities],
         minZoom: 2,
         maxZoom: 20,
         // maxBoundsViscosity: 1.0,
-    }).setView([44.62867, 3.515625], 2.4);
+    }).setView([44.62867, 3.515625], 2.45);
 
     var southWest = L.latLng(-89.98155760646617, -180),
     northEast = L.latLng(89.99346179538875, 180);

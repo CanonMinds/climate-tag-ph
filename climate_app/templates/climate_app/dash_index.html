@@ -47,7 +47,7 @@
       display: none;
     }
     .leaflet-popup-content-wrapper{
-      background: rgb(111, 51, 51);
+      background: rgb(35, 107, 216);
       box-shadow: 0 3px 14px rgba(0,0,0,0.4);
       color: white;
     }
@@ -103,9 +103,9 @@
       <div class="mapbody col-lg-12">
         <div id="mapid"></div>
         <div class="footer" style="display: flex; justify-content: space-between;">
-          <a href="#" class="btn icsc-btn-secondary-current btn-block" role="button" style="margin-top: 0.5rem;">Main</a>
-          <a href="#" class="btn icsc-btn-secondary btn-block mx-2" role="button">Points/Polygon</a>
-          <a href="#" class="btn icsc-btn-secondary btn-block" role="button">Polygons only</a>
+          <a href="#" class="btn icsc-btn-secondary-current btn-block" role="button" style="margin-top: 0.5rem;">Source Map</a>
+          <a href="#" class="btn icsc-btn-secondary btn-block mx-2" role="button">Climate Objective</a>
+          <a href="#" class="btn icsc-btn-secondary btn-block" role="button">Sectoral Funding</a>
         </div>
     </div>
     </div>
@@ -118,7 +118,7 @@
     denver    = L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.'),
     aurora    = L.marker([39.73, -104.8]).bindPopup('This is Aurora, CO.'),
     golden    = L.marker([39.77, -105.23]).bindPopup('This is Golden, CO.');
-    var cities = L.layerGroup([littleton, denver, aurora, golden]), overlays={};
+    var cities = L.layerGroup([]), overlays={};
     
     // https://leaflet-extras.github.io/leaflet-providers/preview/ 
     // Basemaps available
@@ -143,15 +143,16 @@
     const coordinates3 = [42.322982, -71.095139];
     const coordinates4 = [12.007854, 120.200812];     // Coron, Palawan
     const coordinates5 = [12.45057, 121.05477];       // Philippines left
+    const world_center = [0, 0]; 
 
     var mymap = L.map('mapid', {
         fullscreenControl: {
                 pseudoFullscreen: true
         },
         layers: [voyagerclear, cities],
-        minZoom: 5.45,
-        maxZoom: 20
-    }).setView(coordinates5, 5.45);
+        minZoom: 2,
+        maxZoom: 2,
+    }).setView([44.62867, 3.515625], 2);
 
     var baseMaps = {
         "Voyager Clear": voyagerclear,
@@ -166,7 +167,7 @@
         "Clusters": cities
     };
 
-    const jsonurl = "https://canonminds.github.io/Philippines-Local-Data/WebMapFlightPoints.geojson"
+    const jsonurl = "https://canonminds.github.io/Philippines-Local-Data/custom.geo.json"
     $.getJSON(jsonurl, function(data){
 
     //   var mapIcon = L.icon({
@@ -200,21 +201,21 @@
     mymap.on('click', onMapClick);
 
     // const photoImg = '<img src="https://static.pexels.com/photos/189349/pexels-photo-189349.jpeg" height="50%" width="90%"/>';
-    const polygonurl = "https://canonminds.github.io/Philippines-Local-Data/WebMapFlightPolygons.geojson"
-    $.getJSON(polygonurl, function(data){
-    var geojsonPolygonLayer = L.geoJson(data,{
-        style: function(feature){
-            return { 
-                color: "#6F3333", 
-                weight: 3, 
-                fillOpacity: .6 };
-        },
-        onEachFeature: function( feature, layer ){
-        layer.bindPopup("<br><strong>" + feature.properties.ADM3_EN +", " + feature.properties.ADM2_EN + "</strong><br> (" 
-        + feature.properties.Action + ")").openPopup();
-        }
-    }).addTo(mymap);
-    });
+    // const polygonurl = "https://canonminds.github.io/Philippines-Local-Data/WebMapFlightPolygons.geojson"
+    // $.getJSON(polygonurl, function(data){
+    // var geojsonPolygonLayer = L.geoJson(data,{
+    //     style: function(feature){
+    //         return { 
+    //             color: "#6F3333", 
+    //             weight: 3, 
+    //             fillOpacity: .6 };
+    //     },
+    //     onEachFeature: function( feature, layer ){
+    //     layer.bindPopup("<br><strong>" + feature.properties.ADM3_EN +", " + feature.properties.ADM2_EN + "</strong><br> (" 
+    //     + feature.properties.Action + ")").openPopup();
+    //     }
+    // }).addTo(mymap);
+    // });
 
     function me(){
       alert("More features coming soon!");

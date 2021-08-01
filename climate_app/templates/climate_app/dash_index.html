@@ -102,7 +102,7 @@
       </div>  
       <div class="mapbody col-lg-12">
         <div class="footer" style="display: flex; justify-content: space-between;">
-          <a href="#" class="btn icsc-btn-secondary-current btn-block" role="button" style="margin-top: 0.1rem;">Source Map</a>
+          <a href="#" class="btn icsc-btn-secondary btn-block" role="button" style="margin-top: 0.1rem;">Source Map</a>
           <a href="#" class="btn icsc-btn-secondary btn-block mx-2 " role="button" style="margin-top: 0.1rem;" aria-disabled="true">Climate Objective</a>
           <a href="#" class="btn icsc-btn-secondary btn-block" role="button" style="margin-top: 0.1rem;" aria-disabled="true">Sectoral Funding</a>
         </div>
@@ -143,25 +143,47 @@
     const coordinates3 = [42.322982, -71.095139];
     const coordinates4 = [12.007854, 120.200812];     // Coron, Palawan
     const coordinates5 = [12.45057, 121.05477];       // Philippines left
+    const coordinates6 = [13.042919, 121.91748];       // Adjusted Coordinates
+    const world_coordinates = [44.62867, 3.515625];
     const world_center = [0, 0]; 
 
-    var mymap = L.map('mapid', {
+    // var coordinates_data = {{coordinate_query|safe}};
+
+    var map_data = L.map('mapid', {
+        minZoom: 2,
+        maxZoom: 20,
         fullscreenControl: {
                 pseudoFullscreen: true
         },
-        layers: [grayscale, cities],
-        minZoom: 2,
-        maxZoom: 20,
-        // maxBoundsViscosity: 1.0,
-    }).setView([44.62867, 3.515625], 2.45);
+        layers: [voyagerclear, cities],
+    }).setView(coordinates6, 6);
+
+    // var geoPoints = L.geoJSON(coordinates_data, {
+    //     onEachFeature: onEachFeature
+    // });
+
+    // var clearPopups = L.easyButton({
+    //       states:[
+    //         {
+    //             title: 'Clear pop-ups',
+    //             icon: 'fa-times',
+    //             onClick: function() { 
+    //                     geoPoints.eachLayer(function(layer) {
+    //                         layer.closePopup();
+    //                     });
+    //                     clearPopups.disable();
+    //                 }
+    //         }
+    //       ]
+    //     }).disable().addTo(map);
 
     var southWest = L.latLng(-89.98155760646617, -180),
     northEast = L.latLng(89.99346179538875, 180);
     var bounds = L.latLngBounds(southWest, northEast);
 
-    mymap.setMaxBounds(bounds);
-    mymap.on('drag', function() {
-        mymap.panInsideBounds(bounds, { animate: false });
+    map_data.setMaxBounds(bounds);
+    map_data.on('drag', function() {
+        map_data.panInsideBounds(bounds, { animate: false });
     });
 
     var baseMaps = {
@@ -177,38 +199,92 @@
         "Clusters": cities
     };
 
-    const jsonurl = "https://canonminds.github.io/Philippines-Local-Data/custom.geo.json"
-    $.getJSON(jsonurl, function(data){
+    var coordinates_data = {{coordinate_query|safe}};
+    // console.log(coordinates_data);
 
-    //   var mapIcon = L.icon({
-    //       iconUrl: "{% static 'images/icon.svg' %}",
-    //       iconSize: [60,50]
-    //   });
-    
-      var rodents = L.geoJson(data,{
-        pointToLayer: function(feature,latlng){
-          var marker = L.marker(latlng);
-          marker.bindPopup(feature.properties.Action  + '<br/>' + feature.properties.ADM3_EN+", "
-          +feature.properties.ADM2_EN + '<br/>');
-          return marker;
-        }
-      });
-
-      var clusters = L.markerClusterGroup();
-          clusters.addLayer(rodents);
-          mymap.addLayer(clusters);          
+    var geospatial_data = L.geoJSON(coordinates_data, {
+        onEachFeature: onEachFeature
     });
+    console.log("coordinates_data:",coordinates_data);
 
-    L.control.layers(baseMaps).addTo(mymap);
+    // Function for applying interactive functions to each feature
+    function onEachFeature(feature, layer) {
+      layer.on({
+          mouseover: highlightFeature,
+          mouseout: resetHighlight,
+          // click: redirectToCLUP
+      });
+    }
 
-    // var popup = L.popup();
-    // function onMapClick(e) {
-    //     popup
-    //         .setLatLng(e.latlng)
-    //         .setContent("<b>Coordinates:</b><br>" + e.latlng.toString())
-    //         .openOn(mymap);
-    // }
-    // mymap.on('click', onMapClick);
+    // Function for mouseover
+    function highlightFeature(e) {
+        var layer = e.target;
+
+        layer.setStyle({
+            weight: 5,
+            color: '#666',
+            dashArray: '',
+            fillOpacity: 0.7
+        });
+
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+        }
+
+        info.update(layer.feature.properties);
+    }
+
+    // Function for mouseout
+    function resetHighlight(e) {
+        geospatial_data.resetStyle(e.target);
+        info.update();
+    }
+
+    geospatial_data.addTo(map_data);
+    // const jsonurl = "https://canonminds.github.io/Philippines-Local-Data/custom.geo.json"
+    // $.getJSON(jsonurl, function(data){
+
+    // //   var mapIcon = L.icon({
+    // //       iconUrl: "{% static 'images/icon.svg' %}",
+    // //       iconSize: [60,50]
+    // //   });
+    
+    //   var rodents = L.geoJson(data,{
+    //     pointToLayer: function(feature,latlng){
+    //       var marker = L.marker(latlng);
+    //       marker.bindPopup(feature.properties.Action  + '<br/>' + feature.properties.ADM3_EN+", "
+    //       +feature.properties.ADM2_EN + '<br/>');
+    //       return marker;
+    //     }
+    //   });
+
+    //   var clusters = L.markerClusterGroup();
+    //       clusters.addLayer(rodents);
+    //       map_data.addLayer(clusters);          
+    // });
+    // clusters.addLayer(rodents);
+    // map_data.addLayer(geospatial_data); 
+    // L.geoJSON(states).addTo(map_data);
+
+
+    // L.geoJSON(states, {
+    //     style: function(feature) {
+    //         switch (feature.properties.party) {
+    //             case 'Republican': return {color: "#ff0000"};
+    //             case 'Democrat':   return {color: "#0000ff"};
+    //         }
+    //     }
+    // }).addTo(map_data);
+    L.control.layers(baseMaps).addTo(map_data);
+
+    var popup = L.popup();
+    function onMapClick(e) {
+        popup
+            .setLatLng(e.latlng)
+            .setContent("<b>Coordinates:</b><br>" + e.latlng.toString())
+            .openOn(map_data);
+    }
+    map_data.on('click', onMapClick);
 
     // const photoImg = '<img src="https://static.pexels.com/photos/189349/pexels-photo-189349.jpeg" height="50%" width="90%"/>';
     // const polygonurl = "https://canonminds.github.io/Philippines-Local-Data/WebMapFlightPolygons.geojson"
@@ -224,7 +300,7 @@
     //     layer.bindPopup("<br><strong>" + feature.properties.ADM3_EN +", " + feature.properties.ADM2_EN + "</strong><br> (" 
     //     + feature.properties.Action + ")").openPopup();
     //     }
-    // }).addTo(mymap);
+    // }).addTo(map_data);
     // });
 
     function me(){
@@ -248,7 +324,7 @@
       onEachFeature: function( feature, layer ){
         layer.bindPopup( "<strong>" + feature.properties.Name + "</strong><br/>" + feature.properties.density + " rats per square mile" )
       }
-      }).addTo(mymap);
+      }).addTo(map_data);
     });
 </script>
 </body>

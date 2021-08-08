@@ -12,7 +12,7 @@ class InitialModel(models.Model):
         ordering = ['country_code']
 
     def __str__(self):
-        return self.sovereignty
+        return '{} - {}'.format(self.country_code, self.sovereignty)
 
 class DACMemberCountry(models.Model):
     country_code = models.ForeignKey(InitialModel, on_delete=models.CASCADE, null=True, blank=True, related_name='+')

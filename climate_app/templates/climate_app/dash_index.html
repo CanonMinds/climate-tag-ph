@@ -34,7 +34,9 @@
   <!-- Mapbox -->
   <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
   <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
-
+  <!-- Leaflet fullscreen plugin -->
+  <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+  <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet'/>
 <style>
     #mapid { 
       width: 100%;
@@ -69,6 +71,26 @@
     .icsc-btn-secondary-current:hover{
       background-color: #216e83;;
     }
+    .map-control {
+      padding: 10px 10px 8px 10px;
+      font: 16px/18px 'OpenSans', sans-serif;
+      background: white;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+    }
+
+    .map-control h6 {
+      font-weight: bold;
+      color: #777;
+    }
+
+    .map-control p {
+      font-size: 1rem;
+      margin-bottom: 0px;
+      color: rgb(58, 59, 65);
+    }
+  
 </style>
 
 </head>
@@ -111,7 +133,6 @@
     </div>
   </div>
 
-
 <script>
 
     var littleton = L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.'),
@@ -131,23 +152,22 @@
     var PositronUrl =  'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png';
     var mapboxAttribution = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';    
     
-
     var grayscale = L.tileLayer(mapboxUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
     darkmatter = L.tileLayer(DarkMatterUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
     tonerbackground = L.tileLayer(StamenTonerBackgroundUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
     voyagerclear = L.tileLayer(VoyagerClear, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
     positronnolabel = L.tileLayer(PositronUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution});;
     
-    const coordinates1 = [12.6009, 121.1622]     ;    //Main Coordinates
-    const coordinates2 = [14.65057, 121.05477];       //Central Coordinates
+    const coordinates1 = [12.6009, 121.1622]     ;     //Main Coordinates
+    const coordinates2 = [14.65057, 121.05477];        //Central Coordinates
     const coordinates3 = [42.322982, -71.095139];
-    const coordinates4 = [12.007854, 120.200812];     // Coron, Palawan
-    const coordinates5 = [12.45057, 121.05477];       // Philippines left
-    const coordinates6 = [13.042919, 121.91748];       // Adjusted Coordinates
+    const coordinates4 = [12.007854, 120.200812];      // Coron, Palawan
+    const coordinates5 = [12.45057, 121.05477];        // Philippines left
+    const coordinates6 = [13.042919, 121.91748];       // Adjusted Philippines Coordinates
+    const coordinates7 = [-24.550646, 133.848632];     // Australia
+    const coordinates8 = [46.7213, 2.720216];          // France 
     const world_coordinates = [44.62867, 3.515625];
     const world_center = [0, 0]; 
-
-    // var coordinates_data = {{coordinate_query|safe}};
 
     var map_data = L.map('mapid', {
         minZoom: 2,
@@ -156,26 +176,7 @@
                 pseudoFullscreen: true
         },
         layers: [voyagerclear, cities],
-    }).setView(coordinates6, 6);
-
-    // var geoPoints = L.geoJSON(coordinates_data, {
-    //     onEachFeature: onEachFeature
-    // });
-
-    // var clearPopups = L.easyButton({
-    //       states:[
-    //         {
-    //             title: 'Clear pop-ups',
-    //             icon: 'fa-times',
-    //             onClick: function() { 
-    //                     geoPoints.eachLayer(function(layer) {
-    //                         layer.closePopup();
-    //                     });
-    //                     clearPopups.disable();
-    //                 }
-    //         }
-    //       ]
-    //     }).disable().addTo(map);
+    }).setView(coordinates8, 6); 
 
     var southWest = L.latLng(-89.98155760646617, -180),
     northEast = L.latLng(89.99346179538875, 180);
@@ -200,12 +201,40 @@
     };
 
     var coordinates_data = {{coordinate_query|safe}};
-    // console.log(coordinates_data);
 
     var geospatial_data = L.geoJSON(coordinates_data, {
         onEachFeature: onEachFeature
     });
-    console.log("coordinates_data:",coordinates_data);
+
+    var info = L.control();
+
+    info.onAdd = function (map_data) {
+        // create a div with a class "map-control"
+        this._div = L.DomUtil.create('div', 'map-control'); 
+        this.update();
+        return this._div;
+    };
+
+    // method that we will use to update the control based on feature properties passed
+    info.update = function (properties) {
+        this._div.innerHTML = '<h6>Climate Commitment Finance</h6>' + (properties ?
+            '<p style="text-transform:uppercase; font-weight:bold; color:#3fbd3f;">' + properties.Provider + ' ('+ properties.Year +')'+'</p>' +
+            '<p style="font-weight:bold; margin-top:0px;">' + properties.ClimateDevFinanceCommitmentCurrent + '</p>' +
+            '<p style="margin-top:0px;">' + properties.FinancialInstrument + ' - '+ properties.FinanceType  + '</p>'
+            // '<b style="font-size:21px;">' + properties.FinanceType + '</b><br />'            // + getProv(prependPSGC(props.PSGC))  
+            
+            // + '<br />
+            
+            // <span style="color:' + getColor('clup','css',getStatus(prependPSGC(props.PSGC))) + ';">' +
+            //   getStatus(prependPSGC(props.PSGC)) + '</span>'
+            
+            //   + '<br />
+            
+            // <span style="margin-top:2px;font-size:12px;"> PSGC ' + prependPSGC(props.PSGC) + '</span>'
+            : (coordinates_data) ? '<p>Hover over a country</p>' : '');
+    };
+
+    info.addTo(map_data);
 
     // Function for applying interactive functions to each feature
     function onEachFeature(feature, layer) {
@@ -222,7 +251,7 @@
 
         layer.setStyle({
             weight: 5,
-            color: '#666',
+            color: '#3fbd3f',
             dashArray: '',
             fillOpacity: 0.7
         });
@@ -241,91 +270,18 @@
     }
 
     geospatial_data.addTo(map_data);
-    // const jsonurl = "https://canonminds.github.io/Philippines-Local-Data/custom.geo.json"
-    // $.getJSON(jsonurl, function(data){
 
-    // //   var mapIcon = L.icon({
-    // //       iconUrl: "{% static 'images/icon.svg' %}",
-    // //       iconSize: [60,50]
-    // //   });
-    
-    //   var rodents = L.geoJson(data,{
-    //     pointToLayer: function(feature,latlng){
-    //       var marker = L.marker(latlng);
-    //       marker.bindPopup(feature.properties.Action  + '<br/>' + feature.properties.ADM3_EN+", "
-    //       +feature.properties.ADM2_EN + '<br/>');
-    //       return marker;
-    //     }
-    //   });
+    L.control.layers(null, baseMaps, {position: 'bottomright'}).addTo(map_data);
 
-    //   var clusters = L.markerClusterGroup();
-    //       clusters.addLayer(rodents);
-    //       map_data.addLayer(clusters);          
-    // });
-    // clusters.addLayer(rodents);
-    // map_data.addLayer(geospatial_data); 
-    // L.geoJSON(states).addTo(map_data);
+    // var popup = L.popup();
+    // function onMapClick(e) {
+    //     popup
+    //         .setLatLng(e.latlng)
+    //         .setContent("<b>Coordinates:</b><br>" + e.latlng.toString())
+    //         .openOn(map_data);
+    // }
+    // map_data.on('click', onMapClick);
 
-
-    // L.geoJSON(states, {
-    //     style: function(feature) {
-    //         switch (feature.properties.party) {
-    //             case 'Republican': return {color: "#ff0000"};
-    //             case 'Democrat':   return {color: "#0000ff"};
-    //         }
-    //     }
-    // }).addTo(map_data);
-    L.control.layers(baseMaps).addTo(map_data);
-
-    var popup = L.popup();
-    function onMapClick(e) {
-        popup
-            .setLatLng(e.latlng)
-            .setContent("<b>Coordinates:</b><br>" + e.latlng.toString())
-            .openOn(map_data);
-    }
-    map_data.on('click', onMapClick);
-
-    // const photoImg = '<img src="https://static.pexels.com/photos/189349/pexels-photo-189349.jpeg" height="50%" width="90%"/>';
-    // const polygonurl = "https://canonminds.github.io/Philippines-Local-Data/WebMapFlightPolygons.geojson"
-    // $.getJSON(polygonurl, function(data){
-    // var geojsonPolygonLayer = L.geoJson(data,{
-    //     style: function(feature){
-    //         return { 
-    //             color: "#6F3333", 
-    //             weight: 3, 
-    //             fillOpacity: .6 };
-    //     },
-    //     onEachFeature: function( feature, layer ){
-    //     layer.bindPopup("<br><strong>" + feature.properties.ADM3_EN +", " + feature.properties.ADM2_EN + "</strong><br> (" 
-    //     + feature.properties.Action + ")").openPopup();
-    //     }
-    // }).addTo(map_data);
-    // });
-
-    function me(){
-      alert("More features coming soon!");
-    };
-
-    const mapjsonurl = "https://maptimeboston.github.io/leaflet-intro/neighborhoods.geojson"
-    $.getJSON(mapjsonurl,function(hoodData){
-    var densitymap = L.geoJson( hoodData, {
-      style: function(feature){
-        var fillColor,
-            density = feature.properties.density;
-        if ( density > 80 ) fillColor = "#006837";
-        else if ( density > 40 ) fillColor = "#31a354";
-        else if ( density > 20 ) fillColor = "#78c679";
-        else if ( density > 10 ) fillColor = "#c2e699";
-        else if ( density > 0 ) fillColor = "#ffffcc";
-        else fillColor = "#f7f7f7";  // no data
-        return { color: "#999", weight: 1, fillColor: fillColor, fillOpacity: .6 };
-      },
-      onEachFeature: function( feature, layer ){
-        layer.bindPopup( "<strong>" + feature.properties.Name + "</strong><br/>" + feature.properties.density + " rats per square mile" )
-      }
-      }).addTo(map_data);
-    });
 </script>
 </body>
 </html>

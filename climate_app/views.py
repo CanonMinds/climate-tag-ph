@@ -14,19 +14,25 @@ class SourceMapView(ListView):
     template_name = "climate_app/dash_index.html"
 
     def get_context_data(self, **kwargs):
-        source_map_plans_list = InitialModel.objects.all().distinct("sovereignty")
 
-        """ FeatureCollection - Coordinate Serialization """
-        # coordinate_query = serialize(
-        #     'geojson', source_map_plans_list,
-        #     geometry_field = 'coordinates',
-        #     fields=('sovereignty',))
-
-        # serialized_coordinates = json.loads(coordinate_query)
-
-        coordinate_queries = InitialModel.objects.values(
-            "id", "sovereignty", "geometry"
-        ).distinct("sovereignty")
+        """FeatureCollection - Coordinate Serialization"""
+        coordinate_queries = (
+            DACMemberCountry.objects.filter(
+                country_code__country_code__gt=101,
+                country_code__country_code__lte=10,
+            )
+            .exclude(country_code__country_code__in=[105, 106])
+            .values(
+                "id",
+                "provider",
+                "country_code__geometry",
+                "provider",
+                "year",
+                "climate_dev_finance_commitment_current",
+                "financial_instrument",
+                "finance_type",
+            )
+        )
 
         geojson_format = {
             "type": "FeatureCollection",
@@ -47,18 +53,26 @@ class SourceMapView(ListView):
                     "geometry": "",
                 }
 
-                coordinates = []
-                coordinates.append((record["geometry"]))
-
                 property_serializer = {}
-                property_serializer["Sovereignty"] = record["sovereignty"]
+                property_serializer["Provider"] = record["provider"]
+                property_serializer["Year"] = record["year"]
+                if float(record["climate_dev_finance_commitment_current"]):
+                    property_serializer[
+                        "ClimateDevFinanceCommitmentCurrent"
+                    ] = "$" + str(
+                        float(record["climate_dev_finance_commitment_current"])
+                    )
+                property_serializer["FinancialInstrument"] = record[
+                    "financial_instrument"
+                ]
+                property_serializer["FinanceType"] = record["finance_type"]
                 property_serializer["Attribute"] = ""
 
                 geometry_serializer = {}
                 geometry_serializer["type"] = "MultiPolygon"
 
                 jsonDec = json.decoder.JSONDecoder()
-                myPythonList = jsonDec.decode(record["geometry"])
+                myPythonList = jsonDec.decode(record["country_code__geometry"])
 
                 geometry_serializer["coordinates"] = myPythonList
                 geometry_serializer["id"] = record["id"]

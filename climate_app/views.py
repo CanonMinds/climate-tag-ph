@@ -121,6 +121,7 @@ class ClimateObjectiveView(ListView):
         }
         return context
 
+
 class SectoralFundingView(ListView):
     model = DACMemberCountry
     template_name = "climate_app/dash_sectoral_funding.html"

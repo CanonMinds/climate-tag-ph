@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.core.serializers import serialize
 from django.views.generic import ListView
 
+from climate_app.models import DACMemberCountry
 from climate_app.models import InitialModel
 
 

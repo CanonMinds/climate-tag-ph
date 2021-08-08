@@ -9,7 +9,8 @@ class InitialModelAdmin(admin.ModelAdmin):
     search_fields = ("sovereignty",)
 
 class DACMemberCountryAdmin(admin.ModelAdmin):
-    list_display = ("provider", "year", "country_code", )
+    list_display = ("provider", "sector", "channel_delivery", "year", "country_code", )
+    list_filter = ("adaptation_objective", "year", )
     search_fields = ("provider", "year", "country_code",)
 
 

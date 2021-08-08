@@ -124,9 +124,9 @@
       </div>  
       <div class="mapbody col-lg-12">
         <div class="footer" style="display: flex; justify-content: space-between;">
-          <a href="#" class="btn icsc-btn-secondary btn-block" role="button" style="margin-top: 0.1rem;">Source Map</a>
-          <a href="#" class="btn icsc-btn-secondary btn-block mx-2 " role="button" style="margin-top: 0.1rem;" aria-disabled="true">Climate Objective</a>
-          <a href="#" class="btn icsc-btn-secondary btn-block" role="button" style="margin-top: 0.1rem;" aria-disabled="true">Sectoral Funding</a>
+          <a href="{% url 'climate_app:source_map_dash' %}" class="btn icsc-btn-secondary btn-block" role="button" style="margin-top: 0.1rem;">Source Map</a>
+          <a href="{% url 'climate_app:climate_objective_dash' %}" class="btn icsc-btn-secondary btn-block mx-2 " role="button" style="margin-top: 0.1rem;" aria-disabled="true">Climate Objective</a>
+          <a href="{% url 'climate_app:sectoral_funding_dash' %}" class="btn icsc-btn-secondary btn-block" role="button" style="margin-top: 0.1rem;" aria-disabled="true">Sectoral Funding</a>
         </div>
         <div id="mapid"></div>
     </div>
@@ -176,7 +176,7 @@
                 pseudoFullscreen: true
         },
         layers: [voyagerclear, cities],
-    }).setView(coordinates8, 6); 
+    }).setView(coordinates8, 5); 
 
     var southWest = L.latLng(-89.98155760646617, -180),
     northEast = L.latLng(89.99346179538875, 180);
@@ -203,7 +203,8 @@
     var coordinates_data = {{coordinate_query|safe}};
 
     var geospatial_data = L.geoJSON(coordinates_data, {
-        onEachFeature: onEachFeature
+        onEachFeature: onEachFeature,
+        style: style,
     });
 
     var info = L.control();
@@ -235,6 +236,17 @@
     };
 
     info.addTo(map_data);
+    
+    function style(feature) {
+        return {
+            fillColor: '#3388FF',
+            weight: 2,
+            // opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+        };
+    }
 
     // Function for applying interactive functions to each feature
     function onEachFeature(feature, layer) {
@@ -250,8 +262,8 @@
         var layer = e.target;
 
         layer.setStyle({
-            weight: 5,
-            color: '#3fbd3f',
+            weight: 2,
+            color: '#777',
             dashArray: '',
             fillOpacity: 0.7
         });

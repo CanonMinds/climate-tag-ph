@@ -11,7 +11,7 @@ from climate_app.models import InitialModel
 
 class SourceMapView(ListView):
     model = InitialModel
-    template_name = "climate_app/dash_index.html"
+    template_name = "climate_app/dash_source_map.html"
 
     def get_context_data(self, **kwargs):
 
@@ -88,6 +88,65 @@ class SourceMapView(ListView):
         context = super(ListView, self).get_context_data(**kwargs)
         context = {
             "coordinate_query": coordinate_query,
+        }
+        return context
+
+
+class ClimateObjectiveView(ListView):
+    model = DACMemberCountry
+    template_name = "climate_app/dash_climate_objective.html"
+
+    def get_context_data(self, **kwargs):
+        coordinate_queries = (
+            DACMemberCountry.objects.filter(
+                country_code__country_code__gt=101,
+                country_code__country_code__lte=108,
+            )
+            .exclude(country_code__country_code__in=[105, 106])
+            .values(
+                "id",
+                "provider",
+                "country_code__geometry",
+                "provider",
+                "year",
+                "climate_dev_finance_commitment_current",
+                "financial_instrument",
+                "finance_type",
+            )
+        )
+
+        context = super(ListView, self).get_context_data(**kwargs)
+        context = {
+            "coordinate_query": coordinate_queries,
+        }
+        return context
+
+class SectoralFundingView(ListView):
+    model = DACMemberCountry
+    template_name = "climate_app/dash_sectoral_funding.html"
+
+    def get_context_data(self, **kwargs):
+        coordinate_queries = (
+            DACMemberCountry.objects.filter(
+                country_code__country_code__gt=101,
+                country_code__country_code__lte=108,
+            )
+            .exclude(country_code__country_code__in=[105, 106])
+            .values(
+                "id",
+                "provider",
+                "country_code__geometry",
+                "provider",
+                "year",
+                "climate_dev_finance_commitment_current",
+                "financial_instrument",
+                "finance_type",
+            )
+        )
+
+        context = super(ListView, self).get_context_data(**kwargs)
+        context = {
+            "coordinate_query": coordinate_queries,
         }
         return context
 

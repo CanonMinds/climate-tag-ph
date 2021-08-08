@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.conf.urls import url, include
 
 urlpatterns = [
-    url(r'admin/', admin.site.urls, name="admin"),
-    url(r'^$', climate_app.views.index, name='site_index'),
-    url(r'climate-app/', include('climate_app.urls', 'climate_app')),
+    url(r"admin/", admin.site.urls, name="admin"),
+    url(r"^$", climate_app.views.index, name="site_index"),
+    url(r"climate-app/", include("climate_app.urls", "climate_app")),
 ]

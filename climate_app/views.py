@@ -19,7 +19,7 @@ class SourceMapView(ListView):
         coordinate_queries = (
             DACMemberCountry.objects.filter(
                 country_code__country_code__gt=101,
-                country_code__country_code__lte=10,
+                country_code__country_code__lte=108,
             )
             .exclude(country_code__country_code__in=[105, 106])
             .values(

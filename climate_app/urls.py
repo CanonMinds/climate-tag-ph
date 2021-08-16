@@ -4,15 +4,15 @@ from . import views
 app_name = "climate_app"
 
 urlpatterns = [
-    url(r"source-map/$", views.SourceMapView.as_view(), name="source_map_dash"),
+    url(r"source-map/$", views.dashboard, name="source_map_dash"),
     url(
         r"climate-objective/$",
-        views.ClimateObjectiveView.as_view(),
+        views.dashboard,
         name="climate_objective_dash",
     ),
     url(
         r"sectoral-funding/$",
-        views.SectoralFundingView.as_view(),
+        views.dashboard,
         name="sectoral_funding_dash",
     ),
 ]

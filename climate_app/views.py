@@ -161,5 +161,5 @@ def index(request):
 
 
 def dashboard(request):
-    html = "<html><body>Climate App Contents.</body></html>"
+    html = "<html><body>Page under Construction.</body></html>"
     return HttpResponse(html)

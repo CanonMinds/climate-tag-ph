@@ -17,9 +17,13 @@ from climate_app import views
 import climate_app
 from django.contrib import admin
 from django.conf.urls import url, include
+from django.views.generic import TemplateView
 
 urlpatterns = [
     url(r"admin/", admin.site.urls, name="admin"),
-    url(r"^$", climate_app.views.index, name="site_index"),
+    url(r"^$", TemplateView.as_view(template_name='site_construction.html'), name="site_index"),
     url(r"climate-app/", include("climate_app.urls", "climate_app")),
+    url(r'^under-construction?$',
+     TemplateView.as_view(template_name='site_construction.html'),
+     name='construction'),
 ]

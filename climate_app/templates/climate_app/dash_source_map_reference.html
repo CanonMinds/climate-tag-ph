@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Climate Tag PH</title>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  
+  <!-- LeafletJs -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+  integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+  crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+  integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+  crossorigin=""></script>
+  <!-- Leaflet fullscreen plugin -->
+  <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'/>
+  <!-- MarkCluster -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css"/> 
+  <link rel="stylesheet" href="https://d19vzq90twjlae.cloudfront.net/leaflet-0.7.3/leaflet.css" />
+  <link rel="stylesheet" href="{% static 'css/MarkerCluster.css' %}" />
+  <!-- JQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+  integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+  crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"></script> 
+  <!-- Mapbox -->
+  <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+  <!-- Leaflet fullscreen plugin -->
+  <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+  <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet'/>
+<style>
+    #mapid { 
+      width: 100%;
+      height: 93vh; 
+    }
+    .mapbody{
+      padding: 6px 15px;
+    }
+    .vanish{
+      display: none;
+    }
+    .leaflet-popup-content-wrapper{
+      background: rgb(35, 107, 216);
+      box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+      color: white;
+    }
+    .leaflet-popup-tip{
+      display: none;
+    }
+    .icsc-btn-secondary{
+      color:white;
+      background-color: #163c47;
+    }
+    .icsc-btn-secondary:hover {
+      background-color:#1f5b6b;
+      color: #f3ca63;;
+    }
+    .icsc-btn-secondary-current{
+      color:white;
+      background-color: #1f5b6b;;
+    }
+    .icsc-btn-secondary-current:hover{
+      background-color: #216e83;;
+    }
+    .map-control {
+      padding: 10px 10px 8px 10px;
+      font: 16px/18px 'OpenSans', sans-serif;
+      background: white;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+    }
+
+    .map-control h6 {
+      font-weight: bold;
+      color: #777;
+    }
+
+    .map-control p {
+      font-size: 1rem;
+      margin-bottom: 0px;
+      color: rgb(58, 59, 65);
+    }
+  
+</style>
+
+</head>
+<body style="background-color: white;">
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="display: none;">
+    <a class="navbar-brand" href="#">LCA/CCI/CR</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item vanish">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+    </div>
+  </nav>
+  <div class="container col-lg-12 col-md-12 col-sm-12">
+
+    <div class="row">
+      <div class="col-lg-3" style="display: none;">
+          <div></div>
+          <div class="mt-3">
+              <a href="#"><button type="button" class="layerbtn btn btn-primary btn-lg btn-block mt-5">Map Layer</button></a>
+          <button type="button" class="layerbtn btn btn-secondary btn-lg btn-block mt-3" onClick="window.location.reload()">Clear Filter</button>
+          </div>
+      </div>  
+      <div class="mapbody col-lg-12">
+        <div class="footer" style="display: flex; justify-content: space-between;">
+          <a href="{% url 'climate_app:source_map_dash' %}" class="btn icsc-btn-secondary btn-block" role="button" style="margin-top: 0.1rem;">Source Map</a>
+          <a href="{% url 'climate_app:climate_objective_dash' %}" class="btn icsc-btn-secondary btn-block mx-2 " role="button" style="margin-top: 0.1rem;" aria-disabled="true">Climate Objective</a>
+          <a href="{% url 'climate_app:sectoral_funding_dash' %}" class="btn icsc-btn-secondary btn-block" role="button" style="margin-top: 0.1rem;" aria-disabled="true">Sectoral Funding</a>
+        </div>
+        <div id="mapid"></div>
+    </div>
+    </div>
+  </div>
+
+<script>
+
+    var littleton = L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.'),
+    denver    = L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.'),
+    aurora    = L.marker([39.73, -104.8]).bindPopup('This is Aurora, CO.'),
+    golden    = L.marker([39.77, -105.23]).bindPopup('This is Golden, CO.');
+    var cities = L.layerGroup([]), overlays={};
+    
+    // https://leaflet-extras.github.io/leaflet-providers/preview/ 
+    // Basemaps available
+
+    var accessToken =  'pk.eyJ1IjoiY2Fub25taW5kcyIsImEiOiJjazZ6MDhsbm8wd2l5M2VydnlhNnMzNjd2In0.fHuV1kBL3phDqN7ME7fyFg';
+    var mapboxUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    var DarkMatterUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png';
+    var StamenTonerBackgroundUrl = 'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}{r}.png';
+    var VoyagerClear = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png';
+    var PositronUrl =  'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png';
+    var mapboxAttribution = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';    
+    
+    var grayscale = L.tileLayer(mapboxUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
+    darkmatter = L.tileLayer(DarkMatterUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
+    tonerbackground = L.tileLayer(StamenTonerBackgroundUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
+    voyagerclear = L.tileLayer(VoyagerClear, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution}),
+    positronnolabel = L.tileLayer(PositronUrl, {id: 'MapID', tileSize: 512, zoomOffset: -1, attribution: mapboxAttribution});;
+    
+    const coordinates1 = [12.6009, 121.1622]     ;     //Main Coordinates
+    const coordinates2 = [14.65057, 121.05477];        //Central Coordinates
+    const coordinates3 = [42.322982, -71.095139];
+    const coordinates4 = [12.007854, 120.200812];      // Coron, Palawan
+    const coordinates5 = [12.45057, 121.05477];        // Philippines left
+    const coordinates6 = [13.042919, 121.91748];       // Adjusted Philippines Coordinates
+    const coordinates7 = [-24.550646, 133.848632];     // Australia
+    const coordinates8 = [46.7213, 2.720216];          // France 
+    const world_coordinates = [44.62867, 3.515625];
+    const world_center = [0, 0]; 
+
+    var map_data = L.map('mapid', {
+        minZoom: 2,
+        maxZoom: 20,
+        fullscreenControl: {
+                pseudoFullscreen: true
+        },
+        layers: [grayscale, cities],
+    }).setView(coordinates8, 5); 
+
+    var southWest = L.latLng(-89.98155760646617, -180),
+    northEast = L.latLng(89.99346179538875, 180);
+    var bounds = L.latLngBounds(southWest, northEast);
+
+    map_data.setMaxBounds(bounds);
+    map_data.on('drag', function() {
+        map_data.panInsideBounds(bounds, { animate: false });
+    });
+
+    var baseMaps = {
+        "Voyager Clear": voyagerclear,
+        "<span style='color: darkblue'>Positron</span>": positronnolabel,
+        "<span style='color: grey'>Voyager</span>": grayscale,
+        "Dark Matter": darkmatter, 
+        "Toner Background": tonerbackground,
+    };
+
+    var overlayMaps = {
+        "Cities": cities,
+        "Clusters": cities
+    };
+
+    var coordinates_data = {{coordinate_query|safe}};
+
+    var geospatial_data = L.geoJSON(coordinates_data, {
+        onEachFeature: onEachFeature,
+        style: style,
+    });
+
+    var info = L.control();
+
+    info.onAdd = function (map_data) {
+        // create a div with a class "map-control"
+        this._div = L.DomUtil.create('div', 'map-control'); 
+        this.update();
+        return this._div;
+    };
+
+    // method that we will use to update the control based on feature properties passed
+    info.update = function (properties) {
+        this._div.innerHTML = '<h6>Climate Commitment Finance</h6>' + (properties ?
+            '<p style="text-transform:uppercase; font-weight:bold; color:#3fbd3f;">' + properties.Provider + ' ('+ properties.Year +')'+'</p>' +
+            '<p style="font-weight:bold; margin-top:0px;">' + properties.ClimateDevFinanceCommitmentCurrent + '</p>' +
+            '<p style="margin-top:0px;">' + properties.FinancialInstrument + ' - '+ properties.FinanceType  + '</p>'
+            // '<b style="font-size:21px;">' + properties.FinanceType + '</b><br />'            // + getProv(prependPSGC(props.PSGC))  
+            
+            // + '<br />
+            
+            // <span style="color:' + getColor('clup','css',getStatus(prependPSGC(props.PSGC))) + ';">' +
+            //   getStatus(prependPSGC(props.PSGC)) + '</span>'
+            
+            //   + '<br />
+            
+            // <span style="margin-top:2px;font-size:12px;"> PSGC ' + prependPSGC(props.PSGC) + '</span>'
+            : (coordinates_data) ? '<p>Hover over a country</p>' : '');
+    };
+
+    info.addTo(map_data);
+    
+    function style(feature) {
+        return {
+            fillColor: '#3388FF',
+            weight: 2,
+            // opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+        };
+    }
+
+    // Function for applying interactive functions to each feature
+    function onEachFeature(feature, layer) {
+      layer.on({
+          mouseover: highlightFeature,
+          mouseout: resetHighlight,
+          // click: redirectToCLUP
+      });
+    }
+
+    // Function for mouseover
+    function highlightFeature(e) {
+        var layer = e.target;
+
+        layer.setStyle({
+            weight: 2,
+            color: '#777',
+            dashArray: '',
+            fillOpacity: 0.7
+        });
+
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+        }
+
+        info.update(layer.feature.properties);
+    }
+
+    // Function for mouseout
+    function resetHighlight(e) {
+        geospatial_data.resetStyle(e.target);
+        info.update();
+    }
+
+    geospatial_data.addTo(map_data);
+
+    L.control.layers(null, baseMaps, {position: 'bottomright'}).addTo(map_data);
+
+    // var popup = L.popup();
+    // function onMapClick(e) {
+    //     popup
+    //         .setLatLng(e.latlng)
+    //         .setContent("<b>Coordinates:</b><br>" + e.latlng.toString())
+    //         .openOn(map_data);
+    // }
+    // map_data.on('click', onMapClick);
+
+</script>
+</body>
+</html>
+

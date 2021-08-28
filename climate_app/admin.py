@@ -20,17 +20,18 @@ class DACMemberCountryAdmin(admin.ModelAdmin):
         "channel_delivery",
         "year",
         "country_code",
+        "is_published",
     )
     list_filter = (
         "adaptation_objective",
         "year",
+        "is_published",
     )
     search_fields = (
         "provider",
         "year",
         "country_code",
     )
-
 
 admin.site.register(InitialModel, InitialModelAdmin)
 admin.site.register(DACMemberCountry, DACMemberCountryAdmin)

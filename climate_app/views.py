@@ -2,6 +2,7 @@ import json
 
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.serializers import serialize
 from django.views.generic import ListView
 
@@ -14,16 +15,31 @@ class SourceMapView(ListView):
     template_name = "climate_app/dash_source_map.html"
 
     def get_context_data(self, **kwargs):
-        process=None
+        table_list = DACMemberCountry.objects.values(
+            'year',
+            'provider',
+            'climate_dev_finance_commitment_current',
+            'financial_instrument',
+            'finance_type',
+        )
+
+        """Pagination Section"""
+        page = self.request.GET.get('page', 1)
+        paginator = Paginator(table_list, 10)
+        try:
+            table_data = paginator.page(page)
+        except PageNotAnInteger:
+            table_data = paginator.page(1)
+        except EmptyPage:
+            table_data = paginator.page(paginator.num_pages)
+
+        process = True
         if process:
             """FeatureCollection - Coordinate Serialization"""
             coordinate_queries = (
                 DACMemberCountry.objects.filter(
-                    country_code__country_code__gt=101,
-                    country_code__country_code__lte=108,
-                )
-                .exclude(country_code__country_code__in=[105, 106])
-                .values(
+                    is_published=True,
+                ).values(
                     "id",
                     "provider",
                     "country_code__geometry",
@@ -87,16 +103,18 @@ class SourceMapView(ListView):
             coordinate_query = json.dumps(geojson_format)
         else:
             coordinate_query = None
+
         context = super(ListView, self).get_context_data(**kwargs)
         context = {
             "coordinate_query": coordinate_query,
+            "table_data": table_data,
         }
         return context
 
 
 class ClimateObjectiveView(ListView):
     model = DACMemberCountry
-    template_name = "climate_app/charts.html"
+    template_name = "climate_app/dash_climate_objective.html"
 
     def get_context_data(self, **kwargs):
         coordinate_queries = (

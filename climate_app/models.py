@@ -118,7 +118,7 @@ class DACMemberCountry(models.Model):
         "Type of Finance", default=0, blank=True, null=True
     )
     gender = models.CharField("Gender", max_length=200, blank=True)
-
+    is_published = models.BooleanField("Publish", default=True)
     class Meta:
         verbose_name = "DACMemberCountry"
         verbose_name_plural = "DACMemberCountries"

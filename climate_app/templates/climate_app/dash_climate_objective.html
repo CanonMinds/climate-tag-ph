@@ -45,7 +45,7 @@
 						</div>
 					</div>
 				</div>
-        <div class="col-md-6 vanish">
+        		<div class="col-md-6 vanish">
 					<div class="card">
 						<div class="card-header">
 							<div class="card-title">Bar Chart</div>
@@ -131,6 +131,46 @@
 							</div>
 							<div id="myChartLegend"></div>
 						</div>
+					</div>
+				</div>
+				<div class="col-md-12 ml-auto mr-auto">
+					<div class="table-responsive mt-5">
+						{% if table_data %}
+							<table class="table table-hover">
+								<thead>
+								<tr style="
+									background-color: #1f5b6b; 
+									color:white;
+									text-align: center;
+									">
+									<th></th>
+									<th>Year</th>
+									<th>Provider</th>
+									<th>Purpose Code</th>
+									<th>Sector</th>
+									<th>Sub-sector</th>
+									<th>Gender</th>
+								</tr>
+								</thead>
+								<tbody style="text-align: center;">
+									{% for data in table_data %}
+									<tr>
+										<th scope="row">{{ forloop.counter }}</th>
+										<td>{{ data.year }}</td>
+										<td style="font-weight: 900;">{{ data.provider }}</td>
+										<td>{{ data.purpose_code|default:"-" }}</td>
+										<td>{{ data.sector|default:"-" }}</td>
+										<td>{{ data.sub_sector|default:"-" }}</td>
+										<td>{{ data.gender|default:"-" }}</td>
+									</tr>
+									{% empty %}
+										<h4>Sorry, no records found.</h4>
+									{% endfor %}
+								</tbody>
+							</table>
+						{% else %}
+							<p>Sorry, no current data.</p>
+						{% endif %}
 					</div>
 				</div>
 			</div>

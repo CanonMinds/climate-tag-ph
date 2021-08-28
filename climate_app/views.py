@@ -25,7 +25,7 @@ class SourceMapView(ListView):
 
         """Pagination Section"""
         page = self.request.GET.get('page', 1)
-        paginator = Paginator(table_list, 10)
+        paginator = Paginator(table_list, 20)
         try:
             table_data = paginator.page(page)
         except PageNotAnInteger:
@@ -117,27 +117,16 @@ class ClimateObjectiveView(ListView):
     template_name = "climate_app/dash_climate_objective.html"
 
     def get_context_data(self, **kwargs):
-        coordinate_queries = (
-            DACMemberCountry.objects.filter(
-                country_code__country_code__gt=101,
-                country_code__country_code__lte=108,
-            )
-            .exclude(country_code__country_code__in=[105, 106])
-            .values(
-                "id",
-                "provider",
-                "country_code__geometry",
-                "provider",
-                "year",
-                "climate_dev_finance_commitment_current",
-                "financial_instrument",
-                "finance_type",
-            )
+        table_data = DACMemberCountry.objects.values(
+            'year',
+            'provider',
+            'purpose_code',
+            'sector',
+            'sub_sector',
+            'gender',
         )
-
-        context = super(ListView, self).get_context_data(**kwargs)
         context = {
-            "coordinate_query": coordinate_queries,
+            "table_data": table_data,
         }
         return context
 

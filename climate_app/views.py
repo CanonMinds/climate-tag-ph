@@ -1,4 +1,4 @@
-import json
+import ujson as json
 from datetime import date
 
 from django.http import HttpResponse
@@ -24,16 +24,6 @@ class SourceMapView(ListView):
             "finance_type",
         )
 
-        """Pagination Section"""
-        page = self.request.GET.get("page", 1)
-        paginator = Paginator(table_list, 20)
-        try:
-            table_data = paginator.page(page)
-        except PageNotAnInteger:
-            table_data = paginator.page(1)
-        except EmptyPage:
-            table_data = paginator.page(paginator.num_pages)
-
         process = True
         if process:
             """FeatureCollection - Coordinate Serialization"""
@@ -42,14 +32,13 @@ class SourceMapView(ListView):
             ).values(
                 "id",
                 "provider",
-                "country_code__geometry",
                 "provider",
                 "year",
                 "climate_dev_finance_commitment_current",
                 "financial_instrument",
                 "finance_type",
+                "country_code__geometry",
             )
-
             geojson_format = {
                 "type": "FeatureCollection",
                 "name": "DATA",
@@ -62,51 +51,39 @@ class SourceMapView(ListView):
             features_list = []
             if coordinate_queries:
                 for record in coordinate_queries:
-
                     feature_format = {
                         "type": "Feature",
                         "properties": "",
                         "geometry": "",
                     }
+                    geometry_serializer = {
+                        "type": "MultiPolygon",
+                    }
 
                     property_serializer = {}
                     property_serializer["Provider"] = record["provider"]
                     property_serializer["Year"] = record["year"]
-                    if float(record["climate_dev_finance_commitment_current"]):
-                        property_serializer[
-                            "ClimateDevFinanceCommitmentCurrent"
-                        ] = "$" + str(
-                            float(record["climate_dev_finance_commitment_current"])
-                        )
-                    property_serializer["FinancialInstrument"] = record[
-                        "financial_instrument"
-                    ]
+                    property_serializer["ClimateDevFinanceCommitmentCurrent"] = float(record["climate_dev_finance_commitment_current"])
+                    property_serializer["FinancialInstrument"] = record["financial_instrument"]
                     property_serializer["FinanceType"] = record["finance_type"]
-                    property_serializer["Attribute"] = ""
-
-                    geometry_serializer = {}
-                    geometry_serializer["type"] = "MultiPolygon"
-
-                    jsonDec = json.decoder.JSONDecoder()
-                    myPythonList = jsonDec.decode(record["country_code__geometry"])
-
-                    geometry_serializer["coordinates"] = myPythonList
-                    geometry_serializer["id"] = record["id"]
-
                     feature_format["properties"] = property_serializer
+
+                    geometry_serializer["coordinates"] = json.loads((record["country_code__geometry"]))
+                    geometry_serializer["id"] = record["id"]
                     feature_format["geometry"] = geometry_serializer
 
                     features_list.append(feature_format)
 
             geojson_format["features"] = features_list
             coordinate_query = json.dumps(geojson_format)
+
         else:
             coordinate_query = None
 
         context = super(ListView, self).get_context_data(**kwargs)
         context = {
             "coordinate_query": coordinate_query,
-            "table_data": table_data,
+            "table_data": table_list,
         }
         return context
 

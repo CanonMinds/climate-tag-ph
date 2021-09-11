@@ -49,7 +49,7 @@
 				<div class="col-md-12 ml-auto mr-auto">
 					<div class="table-responsive mt-5">
 						{% if table_data %}
-							<table class="table table-hover">
+							<table class="table table-hover" id="climate_table" cellspacing="0" width="100%">
 								<thead>
 								<tr style="
 									background-color: #1f5b6b; 
@@ -204,7 +204,50 @@
 				}
 			}
 		})
+console.log("hello");
+		//Sortable Header
+		function sortTable(f,n){
+	var rows = $('#climate_table').get();
+	console.log("rows", rows);
 
+	rows.sort(function(a, b) {
+
+		var A = getVal(a);
+		var B = getVal(b);
+
+		if(A < B) {
+			return -1*f;
+		}
+		if(A > B) {
+			return 1*f;
+		}
+		return 0;
+	});
+
+	function getVal(elm){
+		var v = $(elm).children('td').eq(n).text().toUpperCase();
+		if($.isNumeric(v)){
+			v = parseInt(v,10);
+		}
+		return v;
+	}
+
+	$.each(rows, function(index, row) {
+		$('#mytable').children('tbody').append(row);
+	});
+}
+var f_sl = 1;
+var f_nm = 1;
+$("#sl").click(function(){
+    f_sl *= -1;
+    var n = $(this).prevAll().length;
+    sortTable(f_sl,n);
+});
+$("#nm").click(function(){
+    f_nm *= -1;
+    var n = $(this).prevAll().length;
+    sortTable(f_nm,n);
+});
 	</script>
 
 {% endblock javascripts %}

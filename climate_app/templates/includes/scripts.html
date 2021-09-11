@@ -37,3 +37,21 @@
 
 	<!-- Atlantis JS -->
     <script src="{% static 'js/atlantis.min.js' %}"></script>
+
+	<script>
+		document.onreadystatechange = function () {
+        var state = document.readyState
+		if (state == 'interactive') {
+			document.getElementById('main-panelist').style.visibility="hidden";
+			document.getElementById('wrapper_remainder').style.visibility="visible";
+		} else if (state == 'complete') {
+			setTimeout(function(){
+				document.getElementById('interactive');
+				document.getElementById('load').style.visibility="hidden";
+				document.getElementById('main-panelist').style.visibility="visible";
+				document.getElementById('wrapper_remainder').style.visibility="visible";
+			},500
+		);
+	}
+}
+	</script>

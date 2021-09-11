@@ -58,23 +58,37 @@
 
     {% block stylesheets %}{% endblock stylesheets %}
 
+	<style>
+		
+#load{
+    width:100%;
+    height:100%;
+    position:fixed;
+    z-index:9999;
+    background:url("/static/img/rocket.gif") no-repeat center center rgb(255, 255, 255)
+}
+		
+	</style>
 </head>
 <body>
-	<div class="wrapper">
+	<div id="load"></div>
+	
+	<div class="wrapper" id="wrapper_remainder">
 
         {% include 'includes/navigation.html' %}
 
         {% include 'includes/sidebar.html' %}
-
-		<div class="main-panel">
+		
+		<div class="main-panel" id="main-panelist">
 			
 			{% block content %}{% endblock content %}
 
 			{% include 'includes/footer.html' %}
 
 		</div>
-	</div>
 
+	</div>
+    
 	{% include 'includes/scripts.html' %}
 
     {% block javascripts %}{% endblock javascripts %}

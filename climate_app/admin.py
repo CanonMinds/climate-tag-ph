@@ -33,5 +33,6 @@ class DACMemberCountryAdmin(admin.ModelAdmin):
         "country_code",
     )
 
+
 admin.site.register(InitialModel, InitialModelAdmin)
 admin.site.register(DACMemberCountry, DACMemberCountryAdmin)

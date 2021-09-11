@@ -1,4 +1,5 @@
 import json
+from datetime import date
 
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -16,15 +17,15 @@ class SourceMapView(ListView):
 
     def get_context_data(self, **kwargs):
         table_list = DACMemberCountry.objects.values(
-            'year',
-            'provider',
-            'climate_dev_finance_commitment_current',
-            'financial_instrument',
-            'finance_type',
+            "year",
+            "provider",
+            "climate_dev_finance_commitment_current",
+            "financial_instrument",
+            "finance_type",
         )
 
         """Pagination Section"""
-        page = self.request.GET.get('page', 1)
+        page = self.request.GET.get("page", 1)
         paginator = Paginator(table_list, 20)
         try:
             table_data = paginator.page(page)
@@ -36,19 +37,17 @@ class SourceMapView(ListView):
         process = True
         if process:
             """FeatureCollection - Coordinate Serialization"""
-            coordinate_queries = (
-                DACMemberCountry.objects.filter(
-                    is_published=True,
-                ).values(
-                    "id",
-                    "provider",
-                    "country_code__geometry",
-                    "provider",
-                    "year",
-                    "climate_dev_finance_commitment_current",
-                    "financial_instrument",
-                    "finance_type",
-                )
+            coordinate_queries = DACMemberCountry.objects.filter(
+                is_published=True,
+            ).values(
+                "id",
+                "provider",
+                "country_code__geometry",
+                "provider",
+                "year",
+                "climate_dev_finance_commitment_current",
+                "financial_instrument",
+                "finance_type",
             )
 
             geojson_format = {
@@ -118,14 +117,18 @@ class ClimateObjectiveView(ListView):
 
     def get_context_data(self, **kwargs):
         table_data = DACMemberCountry.objects.values(
-            'year',
-            'provider',
-            'purpose_code',
-            'sector',
-            'sub_sector',
-            'gender',
+            "provider",
+            "adaptation_dev_finance_commitment_current",
+            "mitigation_dev_finance_commitment_current",
+            "overlap_commitment_current",
+            "channel_delivery",
         )
+
+        current_date = date.today()
+        commitment_year = current_date.year
+
         context = {
+            "commitment_year": commitment_year,
             "table_data": table_data,
         }
         return context
@@ -136,27 +139,16 @@ class SectoralFundingView(ListView):
     template_name = "climate_app/dash_sectoral_funding.html"
 
     def get_context_data(self, **kwargs):
-        coordinate_queries = (
-            DACMemberCountry.objects.filter(
-                country_code__country_code__gt=101,
-                country_code__country_code__lte=108,
-            )
-            .exclude(country_code__country_code__in=[105, 106])
-            .values(
-                "id",
-                "provider",
-                "country_code__geometry",
-                "provider",
-                "year",
-                "climate_dev_finance_commitment_current",
-                "financial_instrument",
-                "finance_type",
-            )
+        table_data = DACMemberCountry.objects.values(
+            "year",
+            "provider",
+            "purpose_code",
+            "sector",
+            "sub_sector",
+            "gender",
         )
-
-        context = super(ListView, self).get_context_data(**kwargs)
         context = {
-            "coordinate_query": coordinate_queries,
+            "table_data": table_data,
         }
         return context
 

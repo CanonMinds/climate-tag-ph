@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('climate_app', '0001_initial'),
+        ("climate_app", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='dacmembercountry',
-            name='is_published',
-            field=models.BooleanField(default=True, verbose_name='Publish'),
+            model_name="dacmembercountry",
+            name="is_published",
+            field=models.BooleanField(default=True, verbose_name="Publish"),
         ),
     ]

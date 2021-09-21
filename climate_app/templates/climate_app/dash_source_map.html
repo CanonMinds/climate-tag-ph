@@ -138,7 +138,7 @@
 					pseudoFullscreen: true
 			},
         	layers: [voyager],
-    	}).setView(coordinates8, 4.5); 
+    	}).setView(coordinates6, 4.5); 
 
 		L.control.layers(null, baseMaps, {position: 'bottomright'}).addTo(map_data);
 
@@ -150,44 +150,57 @@
 			map_data.panInsideBounds(bounds, { animate: false });
 		});
 
-		var coordinates_data = {{coordinate_query|safe}};
-
-		var geospatial_data = L.geoJSON(coordinates_data, {
+		// var coordinates_data = {{coordinate_query|safe}};
+		var coordinates_data = 'https://raw.githubusercontent.com/CanonMinds/climate-tag-ph/7e4116a4cd91ae7a18b812544ae4615212d4075a/fixtures/countries.geojson';
+		
+		var geospatial_data = L.geoJSON(null, {
 			onEachFeature: onEachFeature,
-			style: style,
+			style: styleMap,
+		});
+		$.getJSON(coordinates_data, function(data){
+			geospatial_data.addData(data)
 		});
 
-		// ON-HOVER FEATURE
+
+		// On-hover feature
 		var info = L.control();
 		info.onAdd = function (map_data) {
 			// creating a div with a class "map-control"
-			this._div = L.DomUtil.create('div', 'map-control'); 
+			this._div = L.DomUtil.create('div', 'map-control');
 			this.update();
 			return this._div;
 		};
 
-		// method that we will use to update the control based on feature properties passed
+		// Update the control based on feature properties passed
 		info.update = function (properties) {
 			this._div.innerHTML = '<h6>Climate Commitment Finance</h6>' + (properties ?
-				'<p style="text-transform:uppercase; font-weight:bold; color:#1f5b6b;">' + properties.Provider + ' ('+ properties.Year +')'+'</p>' +
+				'<p style="text-transform:uppercase; font-weight:bold; color:#1f5b6b;">' + properties.ADMIN + ' (ISO: '+ properties.ISO_A3 +')'+'</p>' +
 				'<p style="font-weight:bold; margin-top:0px;">' + properties.ClimateDevFinanceCommitmentCurrent + '</p>' +
 				'<p style="margin-top:0px;">' + properties.FinancialInstrument + ' : '+ properties.FinanceType  + '</p>'
 				: (coordinates_data) ? '<p>Hover over a country</p>' : '');
 		};
 
+		// Default innerhtml
+		// info.update = function (properties) {
+		// 	this._div.innerHTML = '<h6>Climate Commitment Finance</h6>' + (properties ?
+		// 		'<p style="text-transform:uppercase; font-weight:bold; color:#1f5b6b;">' + properties.Provider + ' ('+ properties.Year +')'+'</p>' +
+		// 		'<p style="font-weight:bold; margin-top:0px;">' + properties.ClimateDevFinanceCommitmentCurrent + '</p>' +
+		// 		'<p style="margin-top:0px;">' + properties.FinancialInstrument + ' : '+ properties.FinanceType  + '</p>'
+		// 		: (coordinates_data) ? '<p>Hover over a country</p>' : '');
+		// };
+
 		info.addTo(map_data);
-		function style(feature) {
+		function styleMap(feature) {
 			return {
 				fillColor: '#a1a616',
 				weight: 2,
-				// opacity: 1,
 				color: 'white',
 				dashArray: '3',
 				fillOpacity: 0.7
 			};
 		}
 
-		// Function for applying interactive functions to each feature
+		//  Applying interactive functions to each feature
 		function onEachFeature(feature, layer) {
 		layer.on({
 			mouseover: highlightFeature,
@@ -195,7 +208,7 @@
 			});
 		}
 
-		// Function for mouseover
+		// Mouseover
 		function highlightFeature(e) {
 			var layer = e.target;
 			layer.setStyle({
@@ -210,7 +223,7 @@
 			info.update(layer.feature.properties);
 		}
 
-		// Function for mouseout
+		// Mouseout
 		function resetHighlight(e) {
 			geospatial_data.resetStyle(e.target);
 			info.update();
